@@ -3,8 +3,13 @@ const numbers = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
 function findStringNumbers (line){
   const testArray = {};
   for (let n = 0; n < numbers.length; n++) {
-      
-      if (line.includes(numbers[n])) testArray[line.lastIndexOf(numbers[n])] = numbers[n];
+      if (line.includes(numbers[n])) {
+        let index = line.indexOf(numbers[n]);
+        while (index >= 0) {
+          testArray[index] = numbers[n];
+          index = line.indexOf(numbers[n], index + 1)
+        }
+      };
   }
   const keys = Object.keys(testArray);
   if (keys.length > 0) {
@@ -15,9 +20,8 @@ function findStringNumbers (line){
 }
 let finalNum = 0;
 
-const allContents = fs.readFileSync('inputTxt.txt', 'utf-8');
+const allContents = fs.readFileSync('Day1/inputTxt.txt', 'utf-8');
 allContents.split(/\r?\n/).forEach((line) => {
-  // console.log('line: ', line);
   let filterFirstLastNumber;
 
   if (parseInt(line.charAt(0)) && parseInt(line.charAt(line.length - 1))) {
@@ -33,11 +37,12 @@ allContents.split(/\r?\n/).forEach((line) => {
     numIndexes.sort(function(a, b){return a-b});
     let firstNum;
     let lastNum;
+
     let preFirstNumStringSection = line.substring(0, numIndexes[0]);
     let postLastNumStringSection= line.length - 1 === numIndexes[numIndexes.length - 1] ? '' :  line.substring(numIndexes[numIndexes.length - 1]);
+
     const preFirstStringNumCount = findStringNumbers(preFirstNumStringSection);
     const postLastStringNumCount = findStringNumbers(postLastNumStringSection);
-
     if (preFirstStringNumCount.length > 0) {
       firstNum = preFirstStringNumCount[0][2];
 
@@ -49,11 +54,9 @@ allContents.split(/\r?\n/).forEach((line) => {
     } else {
       lastNum = line.charAt(numIndexes[numIndexes.length - 1]);
     }
-    filterFirstLastNumber = [firstNum, lastNum]
+    filterFirstLastNumber = [parseInt(firstNum), parseInt(lastNum)]
   }
-
-  const numInt = parseInt(filterFirstLastNumber.join(""));
-  // console.log('numInt: ', numInt);
+  const numInt = filterFirstLastNumber[0] * 10 + filterFirstLastNumber[1]
   finalNum = finalNum + numInt;
 });
 console.log('finalNum: ', finalNum);
